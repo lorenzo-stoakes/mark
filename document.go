@@ -40,16 +40,17 @@ type Document struct {
 	Lines            int
 	References       []*Reference
 	ReferencesByName map[string]*Reference
-	Referenced       map[string][]Location
+	ReferencedByName map[string][]Location
 }
 
 func newDocument(path string) *Document {
-	return &Document{Path: path, Referenced: make(map[string][]Location),
-		ReferencesByName: make(map[string]*Reference)}
+	return &Document{Path: path,
+		ReferencesByName: make(map[string]*Reference),
+		ReferencedByName: make(map[string][]Location)}
 }
 
 func (d *Document) referTo(name string, loc Location) {
-	d.Referenced[name] = append(d.Referenced[name], loc)
+	d.ReferencedByName[name] = append(d.ReferencedByName[name], loc)
 }
 
 func (d *Document) define(name, uri string, loc Location) {
@@ -80,7 +81,7 @@ func (d *Document) Duplicates() References {
 func (d *Document) Missing() []string {
 	var ret []string
 
-	for ref, _ := range d.Referenced {
+	for ref, _ := range d.ReferencedByName {
 		if _, has := d.ReferencesByName[ref]; !has {
 			ret = append(ret, ref)
 		}
