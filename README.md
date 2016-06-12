@@ -16,5 +16,5 @@ Making sure that your `$GOPATH/bin` is on your `PATH`.
 ## Usage
 
 ```
-$ ./mark [markdown file]
+$ mark [markdown file]
 ```
