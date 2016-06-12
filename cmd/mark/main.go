@@ -8,7 +8,7 @@ import (
 )
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: %s [markdown file]\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Usage: %s [markdown files...]\n", os.Args[0])
 	os.Exit(1)
 }
 
@@ -17,11 +17,11 @@ func main() {
 		usage()
 	}
 
-	path := os.Args[1]
-
-	if doc, err := mark.ParseFile(path); err != nil {
-		fmt.Fprintf(os.Stderr, "ERROR: %s\n", err)
-	} else {
-		fmt.Printf("%s\n", doc)
+	for _, path := range os.Args[1:] {
+		if doc, err := mark.ParseFile(path); err != nil {
+			fmt.Fprintf(os.Stderr, "ERROR: %s\n", err)
+		} else {
+			fmt.Printf("%s\n", doc)
+		}
 	}
 }
