@@ -105,19 +105,19 @@ func (d *Document) String() string {
 		lines = append(lines, fmt.Sprintf(str, args...))
 	}
 
-	add(d.Path)
+	add("%s:", d.Path)
 
 	if len(dupes) > 0 {
-		add("  %d duplicate(s)", len(dupes))
+		add("   %d duplicate(s):", len(dupes))
 		for _, dupe := range dupes {
-			add("    %s", dupe.Name)
+			add("      %s", dupe.Name)
 		}
 	}
 
 	if len(missing) > 0 {
-		add("  %d missing reference(s)", len(missing))
+		add("   %d missing reference(s):", len(missing))
 		for _, def := range missing {
-			add("    %s", def)
+			add("      %s", def)
 		}
 	}
 
