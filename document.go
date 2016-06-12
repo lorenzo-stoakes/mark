@@ -124,8 +124,8 @@ func (d *Document) String() string {
 
 	if len(dupes) > 0 {
 		add("   %d duplicate reference(s):", len(dupes))
-		for _, dupe := range dupes {
-			add("      %s", dupe.Name)
+		for _, ref := range dupes {
+			add("      %s", ref.Name)
 		}
 	}
 
