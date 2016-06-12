@@ -1,6 +1,7 @@
 # mark
 
-Mark is a tool which detects duplicate and missing references in markdown files.
+Mark is a tool which detects duplicate, missing and unused references in
+markdown files.
 
 ## Installation
 

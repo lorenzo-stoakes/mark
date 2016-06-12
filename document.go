@@ -90,17 +90,31 @@ func (d *Document) Missing() []string {
 	return ret
 }
 
+func (d *Document) Unused() References {
+	var ret []*Reference
+
+	for _, ref := range d.References {
+		if _, has := d.ReferencedByName[ref.Name]; !has {
+			ret = append(ret, ref)
+		}
+	}
+
+	return ret
+}
+
 func (d *Document) String() string {
 	dupes := d.Duplicates()
 	sort.Sort(dupes)
 	missing := d.Missing()
 	sort.Strings(missing)
+	unused := d.Unused()
+	sort.Sort(unused)
 
 	if len(dupes)+len(missing) == 0 {
 		return ""
 	}
 
-	lines := make([]string, 0, 3+len(dupes)+len(missing))
+	lines := make([]string, 0, 4+len(dupes)+len(missing)+len(unused))
 
 	add := func(str string, args ...interface{}) {
 		lines = append(lines, fmt.Sprintf(str, args...))
@@ -119,6 +133,13 @@ func (d *Document) String() string {
 		add("   %d missing reference(s):", len(missing))
 		for _, refName := range missing {
 			add("      %s", refName)
+		}
+	}
+
+	if len(unused) > 0 {
+		add("   %d unused reference(s):", len(unused))
+		for _, ref := range unused {
+			add("      %s", ref.Name)
 		}
 	}
 
