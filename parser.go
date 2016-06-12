@@ -27,6 +27,10 @@ func (s *parseState) chr() uint8 {
 	return s.line[s.index]
 }
 
+func (s *parseState) rest() string {
+	return s.line[s.index:]
+}
+
 func (s *parseState) eol() bool {
 	return s.index >= len(s.line)
 }
