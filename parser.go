@@ -14,13 +14,14 @@ type parseState struct {
 	endDefName                    int
 	canDefine                     bool
 	opened, referencing, defining bool
+	code, multiCode               bool
 }
 
-func (d *Document) newParseState(lineNum int, line string) *parseState {
+func (d *Document) newParseState(lineNum int, line string, multi bool) *parseState {
 	// Reference definitions are only (possibly) allowed if they sit alone
 	// on a line.
 	return &parseState{lineNum: lineNum, line: line, Document: d,
-		canDefine: line[0] == '['}
+		canDefine: line[0] == '[', multiCode: multi}
 }
 
 func (s *parseState) chr() uint8 {
@@ -102,8 +103,31 @@ func (s *parseState) finishReference() {
 	s.Document.referTo(name, Location{s.lineNum, s.start + 1})
 }
 
+func (s *parseState) codeBlock() {
+	// Note that s.code => !s.multiCode.
+	if s.code {
+		// We've closed out our code section.
+		s.code = false
+		return
+	}
+
+	rest := s.rest()
+	if len(rest) >= 3 && rest[:3] == "```" {
+		// Skip remaining 2 quote chars.
+		s.index += 2
+
+		s.multiCode = !s.multiCode
+		return
+	}
+
+	if !s.multiCode {
+		// Otherwise we just opened a single quote code block.
+		s.code = true
+	}
+}
+
 func (s *parseState) close() {
-	if !s.opened {
+	if !s.opened || s.code || s.multiCode {
 		return
 	}
 	s.opened = false
@@ -134,7 +158,7 @@ func (s *parseState) close() {
 }
 
 func (s *parseState) open() {
-	if s.opened {
+	if s.opened || s.code || s.multiCode {
 		return
 	}
 
@@ -144,6 +168,8 @@ func (s *parseState) open() {
 
 func (s *parseState) Next() {
 	switch s.chr() {
+	case '`':
+		s.codeBlock()
 	case ']':
 		s.close()
 	case '[':
@@ -166,10 +192,11 @@ func (s *parseState) Parse() {
 	}
 }
 
-func (d *Document) parseLine(lineNum int, line string) {
-	parseState := d.newParseState(lineNum, line)
-
+func (d *Document) parseLine(lineNum int, line string, multi bool) *parseState {
+	parseState := d.newParseState(lineNum, line, multi)
 	parseState.Parse()
+
+	return parseState
 }
 
 func ParseFile(path string) (ret *Document, err error) {
@@ -182,6 +209,7 @@ func ParseFile(path string) (ret *Document, err error) {
 	defer file.Close()
 	reader := bufio.NewReader(file)
 
+	multi := false
 	lineNum := 1
 	ret = newDocument(path)
 	var bytes []byte
@@ -191,7 +219,8 @@ func ParseFile(path string) (ret *Document, err error) {
 		}
 
 		// We intentionally include the newline.
-		ret.parseLine(lineNum, string(bytes))
+		state := ret.parseLine(lineNum, string(bytes), multi)
+		multi = state.multiCode
 		lineNum++
 	}
 	// Clear EOF.
