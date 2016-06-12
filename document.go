@@ -107,14 +107,18 @@ func (d *Document) String() string {
 
 	add(d.Path)
 
-	add("  %d duplicate(s)", len(dupes))
-	for _, dupe := range dupes {
-		add("    %s", dupe.Name)
+	if len(dupes) > 0 {
+		add("  %d duplicate(s)", len(dupes))
+		for _, dupe := range dupes {
+			add("    %s", dupe.Name)
+		}
 	}
 
-	add("  %d missing reference(s)", len(missing))
-	for _, def := range missing {
-		add("    %s", def)
+	if len(missing) > 0 {
+		add("  %d missing reference(s)", len(missing))
+		for _, def := range missing {
+			add("    %s", def)
+		}
 	}
 
 	return strings.Join(lines, "\n")
