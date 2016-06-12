@@ -18,3 +18,9 @@ Making sure that your `$GOPATH/bin` is on your `PATH`.
 ```
 $ mark [markdown files...]
 ```
+
+The tool outputs duplicates/missing references if they exist, otherwise it
+outputs nothing.
+
+If any of the specified files have duplicate or missing entries, or if an error
+occurs, the tool exits with status code 1.

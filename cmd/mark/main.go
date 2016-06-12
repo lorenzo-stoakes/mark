@@ -17,11 +17,18 @@ func main() {
 		usage()
 	}
 
+	bad := false
 	for _, path := range os.Args[1:] {
 		if doc, err := mark.ParseFile(path); err != nil {
+			bad = true
 			fmt.Fprintf(os.Stderr, "ERROR: %s\n", err)
-		} else {
+		} else if str := doc.String(); str != "" {
+			bad = true
 			fmt.Printf("%s\n", doc)
 		}
+	}
+
+	if bad {
+		os.Exit(1)
 	}
 }

@@ -95,6 +95,10 @@ func (d *Document) String() string {
 	missing := d.MissingDefines()
 	sort.Strings(missing)
 
+	if len(dupes) + len(missing) == 0 {
+		return ""
+	}
+
 	lines := make([]string, 0, 3 + len(dupes) + len(missing))
 
 	add := func(str string, args ...interface{}) {
