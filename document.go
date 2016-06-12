@@ -95,11 +95,11 @@ func (d *Document) String() string {
 	missing := d.MissingDefines()
 	sort.Strings(missing)
 
-	if len(dupes) + len(missing) == 0 {
+	if len(dupes)+len(missing) == 0 {
 		return ""
 	}
 
-	lines := make([]string, 0, 3 + len(dupes) + len(missing))
+	lines := make([]string, 0, 3+len(dupes)+len(missing))
 
 	add := func(str string, args ...interface{}) {
 		lines = append(lines, fmt.Sprintf(str, args...))
