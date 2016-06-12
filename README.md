@@ -8,7 +8,7 @@ missing references.
 Mark is an idiomatic go tool, so you need only run:
 
 ```
-go get github.com/lorenzo-stoakes/mark
+go get github.com/lorenzo-stoakes/mark/...
 ```
 
 Making sure that your `$GOPATH/bin` is on your `PATH`.
