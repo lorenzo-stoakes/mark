@@ -8,11 +8,12 @@ import (
 
 type parseState struct {
 	*Document
-	line                                     string
-	index, lineNum                           int
-	start, startName, startUri               int
-	endDefName                               int
-	canDefine, opened, referencing, defining bool
+	line                          string
+	index, lineNum                int
+	start, startName, startUri    int
+	endDefName                    int
+	canDefine                     bool
+	opened, referencing, defining bool
 }
 
 func (d *Document) newParseState(lineNum int, line string) *parseState {
