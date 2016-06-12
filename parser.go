@@ -178,7 +178,7 @@ func ParseFile(path string) (ret *Document, err error) {
 	reader := bufio.NewReader(file)
 
 	lineNum := 1
-	ret = newDocument()
+	ret = newDocument(path)
 	var bytes []byte
 	for bytes, err = reader.ReadBytes('\n'); err != io.EOF; bytes, err = reader.ReadBytes('\n') {
 		if err != nil {

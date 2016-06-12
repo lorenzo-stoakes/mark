@@ -21,14 +21,15 @@ type Reference struct {
 }
 
 type Document struct {
+	Path             string
 	Lines            int
 	References       []*Reference
 	ReferencesByName map[string]*Reference
 	Referenced       map[string][]Location
 }
 
-func newDocument() *Document {
-	return &Document{Referenced: make(map[string][]Location),
+func newDocument(path string) *Document {
+	return &Document{Path: path, Referenced: make(map[string][]Location),
 		ReferencesByName: make(map[string]*Reference)}
 }
 
