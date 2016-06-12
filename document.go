@@ -77,7 +77,7 @@ func (d *Document) Duplicates() []*Reference {
 	return ret
 }
 
-func (d *Document) MissingDefines() []string {
+func (d *Document) Missing() []string {
 	var ret []string
 
 	for ref, _ := range d.Referenced {
@@ -92,7 +92,7 @@ func (d *Document) MissingDefines() []string {
 func (d *Document) String() string {
 	dupes := References(d.Duplicates())
 	sort.Sort(dupes)
-	missing := d.MissingDefines()
+	missing := d.Missing()
 	sort.Strings(missing)
 
 	if len(dupes)+len(missing) == 0 {
@@ -108,7 +108,7 @@ func (d *Document) String() string {
 	add("%s:", d.Path)
 
 	if len(dupes) > 0 {
-		add("   %d duplicate(s):", len(dupes))
+		add("   %d duplicate reference(s):", len(dupes))
 		for _, dupe := range dupes {
 			add("      %s", dupe.Name)
 		}
@@ -116,8 +116,8 @@ func (d *Document) String() string {
 
 	if len(missing) > 0 {
 		add("   %d missing reference(s):", len(missing))
-		for _, def := range missing {
-			add("      %s", def)
+		for _, refName := range missing {
+			add("      %s", refName)
 		}
 	}
 
