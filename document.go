@@ -65,7 +65,7 @@ func (d *Document) define(name, uri string, loc Location) {
 	}
 }
 
-func (d *Document) Duplicates() []*Reference {
+func (d *Document) Duplicates() References {
 	var ret []*Reference
 
 	for _, ref := range d.References {
@@ -90,7 +90,7 @@ func (d *Document) Missing() []string {
 }
 
 func (d *Document) String() string {
-	dupes := References(d.Duplicates())
+	dupes := d.Duplicates()
 	sort.Sort(dupes)
 	missing := d.Missing()
 	sort.Strings(missing)
