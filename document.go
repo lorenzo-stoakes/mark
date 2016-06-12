@@ -2,6 +2,7 @@ package mark
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -18,6 +19,20 @@ type Reference struct {
 	Name, Uri string
 
 	Duplicates []*Reference
+}
+
+type References []*Reference
+
+func (rs References) Len() int {
+	return len(rs)
+}
+
+func (rs References) Less(i, j int) bool {
+	return rs[i].Name < rs[j].Name
+}
+
+func (rs References) Swap(i, j int) {
+	rs[i], rs[j] = rs[j], rs[i]
 }
 
 type Document struct {
@@ -50,21 +65,52 @@ func (d *Document) define(name, uri string, loc Location) {
 	}
 }
 
-func (d *Document) String() string {
-	// TODO: Output duplicates/missing refs.
+func (d *Document) Duplicates() []*Reference {
+	var ret []*Reference
 
-	// TODO: Output refs in alphabetical order.
-
-	lines := make([]string, 0, len(d.Referenced))
-	for name, locs := range d.Referenced {
-		strlocs := make([]string, len(locs))
-
-		for i, loc := range locs {
-			strlocs[i] = loc.String()
+	for _, ref := range d.References {
+		if len(ref.Duplicates) > 0 {
+			ret = append(ret, ref)
 		}
+	}
 
-		line := fmt.Sprintf("%s: %s", name, strings.Join(strlocs, ", "))
-		lines = append(lines, line)
+	return ret
+}
+
+func (d *Document) MissingDefines() []string {
+	var ret []string
+
+	for ref, _ := range d.Referenced {
+		if _, has := d.ReferencesByName[ref]; !has {
+			ret = append(ret, ref)
+		}
+	}
+
+	return ret
+}
+
+func (d *Document) String() string {
+	dupes := References(d.Duplicates())
+	sort.Sort(dupes)
+	missing := d.MissingDefines()
+	sort.Strings(missing)
+
+	lines := make([]string, 0, 3 + len(dupes) + len(missing))
+
+	add := func(str string, args ...interface{}) {
+		lines = append(lines, fmt.Sprintf(str, args...))
+	}
+
+	add(d.Path)
+
+	add("  %d duplicates", len(dupes))
+	for _, dupe := range dupes {
+		add("    %s", dupe.Name)
+	}
+
+	add("  %d missing references", len(missing))
+	for _, def := range missing {
+		add("    %s", def)
 	}
 
 	return strings.Join(lines, "\n")
