@@ -110,7 +110,7 @@ func (d *Document) String() string {
 	unused := d.Unused()
 	sort.Sort(unused)
 
-	if len(dupes)+len(missing) == 0 {
+	if len(dupes)+len(missing)+len(unused) == 0 {
 		return ""
 	}
 
