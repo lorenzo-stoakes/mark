@@ -68,6 +68,31 @@ func (d *Document) define(name, uri string, loc Location) {
 	}
 }
 
+// Returns a set of base-1 line numbers of references that are either duplicate
+// or unused.
+func (d *Document) defunctLineHash() map[int]bool {
+	dupes := d.Duplicates()
+	unused := d.Unused()
+
+	if len(dupes)+len(unused) == 0 {
+		return nil
+	}
+
+	ret := make(map[int]bool)
+
+	for _, ref := range unused {
+		ret[ref.Line] = true
+	}
+
+	for _, ref := range dupes {
+		for _, ref := range ref.Duplicates {
+			ret[ref.Line] = true
+		}
+	}
+
+	return ret
+}
+
 func (d *Document) Duplicates() References {
 	var ret []*Reference
 
@@ -146,6 +171,10 @@ func (d *Document) String() string {
 	}
 
 	return strings.Join(lines, "\n")
+}
+
+func (d *Document) Fix() error {
+	return d.fix()
 }
 
 func (d *Document) IsMarkdownFile() bool {
