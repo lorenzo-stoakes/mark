@@ -35,6 +35,8 @@ func (rs References) Swap(i, j int) {
 	rs[i], rs[j] = rs[j], rs[i]
 }
 
+// TODO: Add statistics fields.
+
 type Document struct {
 	Path             string
 	Lines            int
