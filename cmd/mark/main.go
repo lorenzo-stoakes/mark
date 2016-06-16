@@ -23,6 +23,36 @@ func tryFix(document *mark.Document) {
 	}
 }
 
+// Check specified path, return true if error or issues detected.
+func check(path string, doFix bool) bool {
+	var (
+		doc *mark.Document
+		err error
+	)
+
+	if doc, err = mark.ParseFile(path); err != nil {
+		fmt.Fprintf(os.Stderr, "ERROR: %s\n", err)
+		return true
+	}
+
+	if doFix {
+		tryFix(doc)
+
+		// Re-parse.
+		// TODO: Do this on the document side without
+		//       having to re-read the file.
+		return check(path, false)
+	}
+
+	if str := doc.String(); str != "" {
+		fmt.Printf("%s\n", doc)
+
+		return true
+	}
+
+	return false
+}
+
 func main() {
 	// Sync -h/--help with too few params usage output.
 	flag.Usage = usage
@@ -35,7 +65,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	bad := false
+	someBad := false
 	for _, path := range args {
 		// Just skip files that don't look like markdown, more
 		// convenient for running `mark *` in a mixed directory.
@@ -43,20 +73,12 @@ func main() {
 			continue
 		}
 
-		if doc, err := mark.ParseFile(path); err != nil {
-			bad = true
-			fmt.Fprintf(os.Stderr, "ERROR: %s\n", err)
-		} else if str := doc.String(); str != "" {
-			bad = true
-			fmt.Printf("%s\n", doc)
-
-			if *fix {
-				tryFix(doc)
-			}
+		if bad := check(path, *fix); bad {
+			someBad = true
 		}
 	}
 
-	if bad {
+	if someBad {
 		os.Exit(1)
 	}
 }
