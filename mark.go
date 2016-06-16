@@ -8,7 +8,7 @@ import (
 // Does the path look like a markdown file?
 func IsMarkdownFile(path string) bool {
 	switch strings.ToLower(pathLib.Ext(path)) {
-	case "md", "markdown":
+	case ".md", ".markdown":
 		return true
 	}
 
