@@ -19,6 +19,12 @@ func main() {
 
 	bad := false
 	for _, path := range os.Args[1:] {
+		// Just skip files that don't look like markdown, more
+		// convenient for running `mark *` in a mixed directory.
+		if !mark.IsMarkdownFile(path) {
+			continue
+		}
+
 		if doc, err := mark.ParseFile(path); err != nil {
 			bad = true
 			fmt.Fprintf(os.Stderr, "ERROR: %s\n", err)

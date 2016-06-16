@@ -145,3 +145,7 @@ func (d *Document) String() string {
 
 	return strings.Join(lines, "\n")
 }
+
+func (d *Document) IsMarkdownFile() bool {
+	return IsMarkdownFile(d.Path)
+}
